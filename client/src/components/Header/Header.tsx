@@ -1,0 +1,16 @@
+    type HeaderProps = {
+        logo: string;
+      };
+      
+      function Header({ logo }: HeaderProps) {
+        return (
+          <header className="header page__section">
+            <img
+              alt="Logotipo Around The U.S."
+              className="logo header__logo"
+              src={logo}
+            />
+          </header>
+        )
+      }
+      export default Header;
