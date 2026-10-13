@@ -1,11 +1,15 @@
 //Imports
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { login, register, checkToken } from "../utils/auth";
 import logo from "../images/logo.svg";
 import Header from './Header/Header';
 import Main from './Main/Main';
 import Footer from './Footer/Footer';
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import Login from "./Login/Login";
+import Register from "./Register/Register";
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import type {
   CardData,
   PopupConfig,
@@ -20,6 +24,10 @@ function App() {
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
   const [cards, setCards] = useState<CardData[]>([]);
   const [popup, setPopup] = useState<PopupConfig | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);  
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
+  const [userEmail, setUserEmail] = useState("");
+  const navigate = useNavigate();
 
   //Effect to fetch user data and cards when the component mounts
   useEffect(() => {
@@ -39,7 +47,57 @@ function App() {
     loadData();
   }, []); 
 
+  //Effect to check for a valid JWT token in local storage and set the logged-in state accordingly
+  useEffect(() => {
+  const token = localStorage.getItem("jwt");
+  if (!token) {
+    return;
+  }
+  checkToken(token)
+    .then((data) => {
+      setIsLoggedIn(true);
+      setUserEmail(data.data.email);
+    })
+    .catch((error) => {
+      console.error(error);
+      localStorage.removeItem("jwt");
+      setIsLoggedIn(false);
+    })
+    .finally(() => {
+      setIsCheckingToken(false);
+    });
+}, []);
+
   //Functions
+  async function handleLogin(email: string, password: string) {
+  try {
+    const data = await login({ email, password });
+
+    localStorage.setItem("jwt", data.token);
+    setIsLoggedIn(true);
+    setUserEmail(email);
+    navigate("/");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function handleRegister(email: string, password: string) {
+  try {
+    await register({ email, password });
+    navigate("/signin");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem("jwt");
+  setIsLoggedIn(false);
+  setUserEmail("");
+  navigate("/signin");
+}
+
   function handleOpenPopup(config: PopupConfig) {
     setPopup(config);
   }
@@ -104,32 +162,74 @@ function App() {
     }
   };
 
-//Return the main application component with context provider and child components
-  return (
-    <CurrentUserContext.Provider 
-      value={{
+//Main application component with context provider and child components
+const mainApp = (
+  <CurrentUserContext.Provider
+    value={{
       currentUser,
       handleUpdateUser,
-      handleUpdateAvatar, 
+      handleUpdateAvatar,
       handleAddPlaceSubmit,
-      }}
-    >
-      <div className="page__content">
-      <Header logo={logo} />
+    }}
+  >
+    <div className="page__content">
+      <Header 
+      logo={logo} 
+      email={userEmail}
+      onLogout={handleLogout}
+      />
 
-      <Main 
-      cards={cards}
-      popup={popup}
-      handleOpenPopup={handleOpenPopup}
-      handleClosePopup={handleClosePopup}
-      handleCardLike={handleCardLike}
-      handleCardDelete={handleCardDelete}
+      <Main
+        cards={cards}
+        popup={popup}
+        handleOpenPopup={handleOpenPopup}
+        handleClosePopup={handleClosePopup}
+        handleCardLike={handleCardLike}
+        handleCardDelete={handleCardDelete}
       />
 
       <Footer />
-      </div>
-    </CurrentUserContext.Provider>
-  );
+    </div>
+  </CurrentUserContext.Provider>
+);
+
+if (isCheckingToken) {
+  return null;
+}
+
+//Return the main application component with context provider and child components
+  return (
+  <Routes>
+    <Route
+      path="/signin"
+      element={
+        isLoggedIn ? (
+          <Navigate to="/" replace />
+        ) : (
+          <Login onLogin={handleLogin} />
+        )
+      }
+    />
+    <Route
+      path="/signup"
+      element={
+        isLoggedIn ? (
+          <Navigate to="/" replace />
+        ) : (
+          <Register onRegister={handleRegister} />
+        )
+      }
+    />
+    <Route
+      path="/"
+      element={
+        <ProtectedRoute isLoggedIn={isLoggedIn}>
+          {mainApp}
+        </ProtectedRoute>
+      }
+    />
+  </Routes>
+);
 }
 
 export default App;

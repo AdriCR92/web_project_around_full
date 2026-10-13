@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-function Login() {
+type LoginProps = {
+  onLogin: (email: string, password: string) => Promise<void>;
+};
+
+function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log({ email, password });
+    await onLogin(email, password);
   }
 
   return (

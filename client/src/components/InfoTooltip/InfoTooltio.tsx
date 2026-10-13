@@ -16,8 +16,8 @@ function InfoTooltip({
       <div className="info-tooltip">
         <p className="info-tooltip__message">
           {isSuccess
-            ? "You've successfully registered!"
-            : "Something went wrong! Please try again."}
+            ? "Te has registrado correctamente!"
+            : "Algo salió mal! Por favor, inténtalo de nuevo."}
         </p>
       </div>
     </Popup>

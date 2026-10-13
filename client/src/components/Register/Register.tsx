@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-function Register() {
+type RegisterProps = {
+  onRegister: (email: string, password: string) => Promise<void>;
+};
+
+function Register({ onRegister }: RegisterProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
 
-    console.log({ email, password });
-  }
+  await onRegister(email, password);
+}
 
   return (
     <div className="auth">

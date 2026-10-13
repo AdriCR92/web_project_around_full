@@ -12,6 +12,32 @@
   object-fit: contain;
 }
 
+.header__user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header__email {
+  margin: 0;
+  color: #fff;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.header__logout {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #a9a9a9;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 18px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 544px) {
   .header {
     min-height: 85px;
