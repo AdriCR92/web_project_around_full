@@ -10,6 +10,7 @@ import CurrentUserContext from "../contexts/CurrentUserContext";
 import Login from "./Login/Login";
 import Register from "./Register/Register";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+import InfoTooltip from "./InfoTooltip/InfoTooltip";
 import type {
   CardData,
   PopupConfig,
@@ -26,6 +27,9 @@ function App() {
   const [popup, setPopup] = useState<PopupConfig | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);  
   const [isCheckingToken, setIsCheckingToken] = useState(true);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+  const [isRegisterSuccess, setIsRegisterSuccess] = useState(false);
+  const [infoTooltipMessage, setInfoTooltipMessage] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
 
@@ -51,6 +55,7 @@ function App() {
   useEffect(() => {
   const token = localStorage.getItem("jwt");
   if (!token) {
+    setIsCheckingToken(false);
     return;
   }
   checkToken(token)
@@ -69,25 +74,34 @@ function App() {
 }, []);
 
   //Functions
-  async function handleLogin(email: string, password: string) {
+async function handleLogin(email: string, password: string) {
+  setIsInfoTooltipOpen(false);
+  setInfoTooltipMessage("");
   try {
     const data = await login({ email, password });
-
     localStorage.setItem("jwt", data.token);
     setIsLoggedIn(true);
     setUserEmail(email);
     navigate("/");
   } catch (error) {
     console.error(error);
+    setInfoTooltipMessage(
+      "Algo salió mal! Por favor, revisa tu correo y contraseña."
+    );
+    setIsInfoTooltipOpen(true);
   }
 }
 
 async function handleRegister(email: string, password: string) {
+  setInfoTooltipMessage("");
   try {
     await register({ email, password });
-    navigate("/signin");
+    setIsRegisterSuccess(true);
+    setIsInfoTooltipOpen(true);
   } catch (error) {
     console.error(error);
+    setIsRegisterSuccess(false);
+    setIsInfoTooltipOpen(true);
   }
 }
 
@@ -105,6 +119,13 @@ function handleLogout() {
   function handleClosePopup() {
     setPopup(null);
   }
+
+  function handleCloseInfoTooltip() {
+  setIsInfoTooltipOpen(false);
+  if (isRegisterSuccess) {
+    navigate("/signin");
+  }
+}
 
   const handleCardLike = async (card: CardData) => {
     const isLiked = card.isLiked;
@@ -199,36 +220,47 @@ if (isCheckingToken) {
 
 //Return the main application component with context provider and child components
   return (
-  <Routes>
-    <Route
-      path="/signin"
-      element={
-        isLoggedIn ? (
-          <Navigate to="/" replace />
-        ) : (
-          <Login onLogin={handleLogin} />
-        )
-      }
+  <>
+    <Routes>
+      <Route
+        path="/signin"
+        element={
+          isLoggedIn ? (
+            <Navigate to="/" replace />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          isLoggedIn ? (
+            <Navigate to="/" replace />
+          ) : (
+            <Register onRegister={handleRegister} />
+          )
+        }
+      />
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            {mainApp}
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+
+    <InfoTooltip
+      isOpen={isInfoTooltipOpen}
+      isSuccess={isRegisterSuccess}
+      onClose={handleCloseInfoTooltip}
+      message={infoTooltipMessage}
     />
-    <Route
-      path="/signup"
-      element={
-        isLoggedIn ? (
-          <Navigate to="/" replace />
-        ) : (
-          <Register onRegister={handleRegister} />
-        )
-      }
-    />
-    <Route
-      path="/"
-      element={
-        <ProtectedRoute isLoggedIn={isLoggedIn}>
-          {mainApp}
-        </ProtectedRoute>
-      }
-    />
-  </Routes>
+  </>
 );
 }
 
