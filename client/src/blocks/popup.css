@@ -190,3 +190,55 @@
     padding: 0;
   }
 }
+
+.popup__content_type_info {
+  width: 430px;
+  min-height: 0;
+  height: 330px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-tooltip {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.info-tooltip__icon {
+  width: 80px;
+  height: 80px;
+  box-sizing: border-box;
+  border: 2px solid;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  line-height: 1;
+}
+
+.info-tooltip__icon_success {
+  color: #000;
+  border-color: #000;
+}
+
+.info-tooltip__icon_error {
+  color: #ff0000;
+  border-color: #ff0000;
+}
+
+.info-tooltip__message {
+  width: 100%;
+  max-width: 358px;
+  margin: 32px 0 0;
+  color: #000;
+  font-size: 24px;
+  line-height: 29px;
+  font-weight: 900;
+  text-align: center;
+}

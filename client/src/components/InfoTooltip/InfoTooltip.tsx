@@ -14,13 +14,27 @@ function InfoTooltip({
   message,
 }: InfoTooltipProps) {
   return (
-    <Popup isOpen={isOpen} onClose={onClose}>
+    <Popup
+      isOpen={isOpen}
+      onClose={onClose}
+      type="info"
+    >
       <div className="info-tooltip">
+        <div
+          className={`info-tooltip__icon ${
+            isSuccess
+              ? "info-tooltip__icon_success"
+              : "info-tooltip__icon_error"
+          }`}
+        >
+          {isSuccess ? "✓" : "×"}
+        </div>
+
         <p className="info-tooltip__message">
           {message ||
             (isSuccess
-            ? "Te has registrado correctamente!"
-            : "Algo salió mal! Por favor, inténtalo de nuevo.")}
+              ? "¡Correcto! Ya estás registrado."
+              : "Uy, algo salió mal. Por favor, inténtalo de nuevo.")}
         </p>
       </div>
     </Popup>

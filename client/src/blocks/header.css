@@ -38,6 +38,19 @@
   cursor: pointer;
 }
 
+.header__auth-link {
+  color: #fff;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.header__auth-link:hover {
+  opacity: 0.6;
+}
+
 @media screen and (max-width: 544px) {
   .header {
     min-height: 85px;

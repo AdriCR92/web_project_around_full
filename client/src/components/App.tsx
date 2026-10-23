@@ -77,6 +77,7 @@ function App() {
 async function handleLogin(email: string, password: string) {
   setIsInfoTooltipOpen(false);
   setInfoTooltipMessage("");
+
   try {
     const data = await login({ email, password });
     localStorage.setItem("jwt", data.token);
@@ -85,8 +86,9 @@ async function handleLogin(email: string, password: string) {
     navigate("/");
   } catch (error) {
     console.error(error);
+    setIsRegisterSuccess(false);
     setInfoTooltipMessage(
-      "Algo salió mal! Por favor, revisa tu correo y contraseña."
+      "Uy, algo salió mal. Por favor, inténtalo de nuevo."
     );
     setIsInfoTooltipOpen(true);
   }
@@ -197,6 +199,7 @@ const mainApp = (
       <Header 
       logo={logo} 
       email={userEmail}
+      isLoggedIn={isLoggedIn}
       onLogout={handleLogout}
       />
 
@@ -214,6 +217,34 @@ const mainApp = (
   </CurrentUserContext.Provider>
 );
 
+const signInPage = (
+  <div className="page__content">
+    <Header
+      logo={logo}
+      isLoggedIn={false}
+      onLogout={handleLogout}
+      authLinkText="Regístrate"
+      authLinkPath="/signup"
+    />
+
+    <Login onLogin={handleLogin} />
+  </div>
+);
+
+const signUpPage = (
+  <div className="page__content">
+    <Header
+      logo={logo}
+      isLoggedIn={false}
+      onLogout={handleLogout}
+      authLinkText="Iniciar sesión"
+      authLinkPath="/signin"
+    />
+
+    <Register onRegister={handleRegister} />
+  </div>
+);
+
 if (isCheckingToken) {
   return null;
 }
@@ -228,7 +259,7 @@ if (isCheckingToken) {
           isLoggedIn ? (
             <Navigate to="/" replace />
           ) : (
-            <Login onLogin={handleLogin} />
+            signInPage
           )
         }
       />
@@ -239,7 +270,7 @@ if (isCheckingToken) {
           isLoggedIn ? (
             <Navigate to="/" replace />
           ) : (
-            <Register onRegister={handleRegister} />
+            signUpPage
           )
         }
       />
