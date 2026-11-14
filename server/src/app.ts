@@ -14,10 +14,10 @@ const PORT = 3001;
 // Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/aroundb")
     .then(() => {
-        console.log("Connected to MongoDB");
+        console.log("Conectad a MongoDB");
     })
     .catch((err) => {
-        console.error("Error connecting to MongoDB:", err);
+        console.error("Error connectando a MongoDB:", err);
     });
 
 // Middleware to parse JSON request bodies
@@ -30,13 +30,6 @@ app.use(
     })
 );
 
-app.use((req, res, next) => {
-    req.user ={
-        _id: "6a8a55c9aa18e6db86ea31c5"    
-    };
-    next();
-});
-
 // Use routers for different routes
 app.use(router);
 
@@ -46,5 +39,5 @@ app.use(errorHandler);
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`App is running on port ${PORT}`);
+    console.log(`App esta corriendo en el puerto ${PORT}`);
 });

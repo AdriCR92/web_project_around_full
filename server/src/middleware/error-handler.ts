@@ -3,10 +3,11 @@ import type {
   Response,
   NextFunction,
 } from "express";
+import { MongoServerError } from "mongodb";
 
 const notFoundHandler = (_req: Request, res: Response) => {
   res.status(404).json({
-    message: "Requested resource not found",
+    message: "Ruta no encontrada",
   });
 };
 
@@ -26,13 +27,21 @@ const errorHandler = (
   ) {
     statusCode = 400;
   }
+  if (
+    err instanceof MongoServerError && 
+    err.code === 11000
+  ) {
+    statusCode = 409;
+  }
 
-  const message =
+ const message =
   statusCode === 400
-    ? "Invalid data"
-    : statusCode === 500
-      ? "An error has occurred on the server"
-      : err.message;
+    ? "Datos de entrada inválidos"
+    : statusCode === 409
+      ? "Correo electrónico ya registrado"
+      : statusCode === 500
+        ? "A ocurrido un error en el servidor"
+        : err.message;
 
   res.status(statusCode).send({ message });
 };

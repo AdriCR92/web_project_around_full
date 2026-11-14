@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
-
+import { validateCredentials } from "../utils/validators.js";
 import User from "../models/user.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-//Routes
+//User routes
 const getUsers = async (_req: Request, res: Response) => {
   const users = await User.find({});
 
@@ -15,36 +17,90 @@ const getUserById = async (req: Request, res: Response) => {
   const user = await User.findById(id);
 
   if (!user) {
-    throw Object.assign(new Error("User ID not found"), { statusCode: 404 });
+    throw Object.assign(new Error("ID de usuario no encontrado"), { statusCode: 404 });
   }
 
   res.json(user);
 };
 
 const createUser = async (req: Request, res: Response) => {
-  const { name, about, avatar } = req.body;
+  const { email, name, about, avatar, password } = req.body;
+
+  validateCredentials(email, password);
+
+  if (password.length < 8) {
+    throw Object.assign(
+      new Error("La contraseña debe tener al menos 8 caracteres"),
+      { statusCode: 400 }
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
+    email,
     name,
     about,
     avatar,
+    password: hashedPassword,
   });
 
-  res.status(201).send(newUser);
+  const { password: _password, ...userData } = newUser.toObject();
+
+  res.status(201).send(userData);
 };
 
+const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  validateCredentials(email, password);
+
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw Object.assign(
+      new Error("Email o contraseña incorrectos"),
+      { statusCode: 401 }
+    );
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw Object.assign(
+      new Error("Email o contraseña incorrectos"),
+      { statusCode: 401 }
+    );
+  }
+
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw Object.assign(
+      new Error("JWT_SECRET no está configurado"),
+      { statusCode: 500 }
+    );
+  }
+
+  const token = jwt.sign(
+    { _id: user._id.toString() }, 
+    jwtSecret, 
+    { expiresIn: "7d" }
+  );
+  res.send({ token });
+};
 
 const getCurrentUser = async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw Object.assign(
-      new Error("Unauthorized"),
+      new Error("No autorizado"),
       { statusCode: 401 }
     );
   }
   const user = await User.findById(req.user._id);
   if (!user) {
     throw Object.assign(
-      new Error("User ID not found"),
+      new Error("ID de usuario no encontrado"),
       { statusCode: 404 }
     );
   }
@@ -56,7 +112,7 @@ const getCurrentUser = async (req: Request, res: Response) => {
 const updateProfile = async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw Object.assign(
-      new Error("Unauthorized"),
+      new Error("No autorizado"),
       { statusCode: 401 }
     );
   }
@@ -74,7 +130,7 @@ const updateProfile = async (req: Request, res: Response) => {
 
   if (!user) {
     throw Object.assign(
-      new Error("User ID not found"),
+      new Error("ID de usuario no encontrado"),
       { statusCode: 404 }
     );
   }
@@ -82,11 +138,11 @@ const updateProfile = async (req: Request, res: Response) => {
   res.send(user);
 };
 
-//Avata route
+//Avatar route
 const updateAvatar = async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw Object.assign(
-      new Error("Unauthorized"),
+      new Error("No autorizado"),
       { statusCode: 401 }
     );
   }
@@ -104,7 +160,7 @@ const updateAvatar = async (req: Request, res: Response) => {
 
   if (!user) {
     throw Object.assign(
-      new Error("User ID not found"),
+      new Error("ID de usuario no encontrado"),
       { statusCode: 404 }
     );
   }
@@ -116,6 +172,7 @@ export {
   getUsers, 
   getUserById, 
   createUser, 
+  login,
   getCurrentUser, 
   updateProfile, 
   updateAvatar
