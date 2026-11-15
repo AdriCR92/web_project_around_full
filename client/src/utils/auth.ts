@@ -1,5 +1,4 @@
-const BASE_URL =
-  "https://se-register-api.en.tripleten-services.com/v1";
+const BASE_URL = "http://localhost:3001";
 
 type AuthData = {
   email: string;
@@ -59,10 +58,11 @@ export async function login({
 
 // Function to check the validity of a token and get user data
 type CheckTokenResponse = {
-  data: {
-    _id: string;
-    email: string;
-  };
+  _id: string;
+  email: string;
+  name: string;
+  about: string;
+  avatar: string;
 };
 
 export async function checkToken(

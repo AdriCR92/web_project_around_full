@@ -14,7 +14,17 @@ class Api {
     this._headers = options.headers;
   }
 
-  private async _checkResponse<T>(res: Response): Promise<T>{
+  private _getHeaders(): Headers {
+    const headers = new Headers(this._headers);
+    const token = localStorage.getItem("jwt");
+    
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  }
+
+private async _checkResponse<T>(res: Response): Promise<T>{
     if (res.ok) {
       return await res.json();
     }
@@ -25,7 +35,7 @@ class Api {
   //methods for user data
   async getUserInfo(): Promise<UserData> {
     const res = await fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      headers: this._getHeaders(),
     });
 
     return this._checkResponse<UserData>(res);
@@ -33,7 +43,7 @@ class Api {
 
   async getInitialCards(): Promise<CardData[]> {
     const res = await fetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      headers: this._getHeaders(),
     });
 
     return this._checkResponse<CardData[]>(res);
@@ -45,7 +55,7 @@ class Api {
   ): Promise<UserData> {
     const res = await fetch(`${this._baseUrl}/users/me`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: this._getHeaders(),
       body: JSON.stringify({ name, about }),
     });
 
@@ -55,7 +65,7 @@ class Api {
   async addCard(name: string, link: string): Promise<CardData> {
     const res = await fetch(`${this._baseUrl}/cards`, {
       method: "POST",
-      headers: this._headers,
+      headers: this._getHeaders(),
       body: JSON.stringify({ name, link }),
     });
 
@@ -65,7 +75,7 @@ class Api {
   async deleteCard(cardId: string): Promise<CardData> {
     const res = await fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: this._getHeaders(),
     });
 
     return this._checkResponse<CardData>(res);
@@ -74,7 +84,7 @@ class Api {
   async addLike(cardId: string): Promise<CardData> {
     const res = await fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: "PUT",
-      headers: this._headers,
+      headers: this._getHeaders(),
     });
 
     return this._checkResponse<CardData>(res);
@@ -83,7 +93,7 @@ class Api {
   async removeLike(cardId: string): Promise<CardData> {
     const res = await fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: this._getHeaders(),
     });
 
     return this._checkResponse<CardData>(res);
@@ -92,7 +102,7 @@ class Api {
   async updateAvatar(avatar: string): Promise<UserData> {
     const res = await fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: this._getHeaders(),
       body: JSON.stringify({ avatar }),
     });
 

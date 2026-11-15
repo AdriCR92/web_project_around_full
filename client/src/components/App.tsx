@@ -35,6 +35,11 @@ function App() {
 
   //Effect to fetch user data and cards when the component mounts
   useEffect(() => {
+
+    if (!isLoggedIn) {
+      return;
+    }
+
     async function loadData() {
       try {
         const [userData, initialCards] = await Promise.all([
@@ -49,7 +54,7 @@ function App() {
       }
     }
     loadData();
-  }, []); 
+  }, [isLoggedIn]); 
 
   //Effect to check for a valid JWT token in local storage and set the logged-in state accordingly
   useEffect(() => {
@@ -61,7 +66,7 @@ function App() {
   checkToken(token)
     .then((data) => {
       setIsLoggedIn(true);
-      setUserEmail(data.data.email);
+      setUserEmail(data.email);
     })
     .catch((error) => {
       console.error(error);

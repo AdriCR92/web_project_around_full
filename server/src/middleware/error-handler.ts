@@ -40,7 +40,7 @@ const errorHandler = (
     : statusCode === 409
       ? "Correo electrónico ya registrado"
       : statusCode === 500
-        ? "A ocurrido un error en el servidor"
+        ? "Ha ocurrido un error en el servidor"
         : err.message;
 
   res.status(statusCode).send({ message });

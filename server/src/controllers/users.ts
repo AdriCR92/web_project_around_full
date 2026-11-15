@@ -4,9 +4,9 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-//User routes
+//User controller functions
 const getUsers = async (_req: Request, res: Response) => {
-  const users = await User.find({});
+  const users = await User.find({}).select("name about avatar");
 
   res.send(users);
 };
@@ -14,7 +14,7 @@ const getUsers = async (_req: Request, res: Response) => {
 const getUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const user = await User.findById(id);
+  const user = await User.findById(id).select("name about avatar");
 
   if (!user) {
     throw Object.assign(new Error("ID de usuario no encontrado"), { statusCode: 404 });
@@ -108,7 +108,7 @@ const getCurrentUser = async (req: Request, res: Response) => {
   res.json(user);
 };
 
-//Profile route
+//Profile controller functions
 const updateProfile = async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw Object.assign(
@@ -123,10 +123,10 @@ const updateProfile = async (req: Request, res: Response) => {
     req.user._id,
     { name, about },
     {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }
-  );
+  ).select("name email about avatar");
 
   if (!user) {
     throw Object.assign(
@@ -138,7 +138,7 @@ const updateProfile = async (req: Request, res: Response) => {
   res.send(user);
 };
 
-//Avatar route
+//Avatar controller functions
 const updateAvatar = async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw Object.assign(
@@ -153,10 +153,10 @@ const updateAvatar = async (req: Request, res: Response) => {
     req.user._id,
     { avatar },
     {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }
-  );
+  ).select("name email about avatar");
 
   if (!user) {
     throw Object.assign(
