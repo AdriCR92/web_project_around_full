@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import "dotenv/config";
 
 import { router } from "./routes/index.js";
 import {
@@ -9,10 +10,16 @@ import {
 } from "./middleware/error-handler.js";    
 
 const app = express();
-const PORT = 3001;
+app.set("trust proxy", 1); // Trust first proxy for rate limiting
+const PORT = Number(process.env.PORT) || 3001;
 
 // Connect to MongoDB
-mongoose.connect("mongodb://127.0.0.1:27017/aroundb")
+mongoose.connect(
+    process.env.MONGO_URI || "mongodb://127.0.0.1:27017/aroundb",
+    {
+        maxPoolSize: 5,
+    }
+)
     .then(() => {
         console.log("Conectad a MongoDB");
     })
@@ -26,9 +33,14 @@ app.use(express.json());
 // Allow requests from this origin
 app.use(
     cors({
-        origin: "http://localhost:3000", 
+        origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
     })
 );
+
+// Health check endpoint
+app.get("/health", (_req, res) => {
+    res.status(200).json({ status: "OK" });
+});
 
 // Use routers for different routes
 app.use(router);

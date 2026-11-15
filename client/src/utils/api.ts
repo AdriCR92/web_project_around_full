@@ -112,8 +112,8 @@ private async _checkResponse<T>(res: Response): Promise<T>{
 
 // Configuration for the API instance
 const apiConfig = {
-  baseUrl: "http://localhost:3001",
-  headers: {
+    baseUrl: import.meta.env.VITE_API_URL ?? "http://localhost:3001",  
+    headers: {
     "Content-Type": "application/json",
   },
 };
