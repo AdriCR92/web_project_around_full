@@ -1,17 +1,23 @@
-# Tripleten web_project_around_full
 Around The U.S. — Full Stack
 
 Aplicación web full stack desarrollada como parte del programa de Desarrollo Web de TripleTen.
 
-El proyecto permite a los usuarios registrarse, iniciar sesión, editar su perfil, actualizar su avatar, crear y eliminar tarjetas, y dar o quitar “me gusta” a las tarjetas.
+El proyecto permite a los usuarios registrarse, iniciar sesión, editar su perfil, actualizar su avatar, crear y eliminar tarjetas, y dar o quitar «me gusta» a las tarjetas.
 
-Funcionalidades
+🌐 Despliegue
+
+La aplicación está desplegada en Vercel y utiliza MongoDB Atlas como base de datos en la nube.
+
+* Frontend: https://web-project-around-full-three.vercel.app/
+* Backend (API REST): https://around-backend-nine.vercel.app/
+
+✨ Funcionalidades
 
 Autenticación
 
 * Registro de nuevos usuarios.
 * Inicio de sesión.
-* Manejo de sesiones mediante JWT.
+* Autenticación mediante JWT.
 * Almacenamiento del token en localStorage.
 * Validación del token al volver a visitar o actualizar la página.
 * Rutas protegidas para usuarios autenticados.
@@ -23,16 +29,18 @@ Perfil de usuario
 * Visualización de la información del usuario.
 * Edición del nombre y descripción.
 * Actualización del avatar.
+* Persistencia de los cambios en MongoDB.
 
 Tarjetas
 
 * Visualización de tarjetas.
 * Creación de nuevas tarjetas.
-* Eliminación de tarjetas.
-* Sistema de “me gusta”.
+* Eliminación de tarjetas propias.
+* Sistema de «me gusta».
 * Vista ampliada de imágenes.
+* Persistencia de tarjetas y likes en MongoDB.
 
-Tecnologías utilizadas
+🛠️ Tecnologías utilizadas
 
 Frontend
 
@@ -49,10 +57,17 @@ Backend
 * Express
 * TypeScript
 * MongoDB
+* MongoDB Atlas
 * Mongoose
+* JWT
 * CORS
 
-Autenticación y rutas
+Despliegue
+
+* Vercel — frontend y backend.
+* MongoDB Atlas — base de datos en la nube.
+
+🔐 Autenticación y rutas
 
 La aplicación utiliza rutas diferentes según el estado de autenticación del usuario:
 
@@ -66,19 +81,24 @@ Después de iniciar sesión correctamente, el JWT se almacena en localStorage. A
 
 Al cerrar sesión, el token se elimina y el usuario es redirigido nuevamente a /signin.
 
-API
+🔗 API REST
 
-El frontend se comunica con el backend para administrar:
+El frontend se comunica con un backend propio desarrollado con Express y TypeScript.
 
-* Información del usuario.
-* Avatar.
-* Tarjetas.
-* Likes.
-* Eliminación y creación de tarjetas.
+La API permite administrar:
 
-La autenticación utiliza la API de autorización proporcionada para el proyecto de TripleTen.
+* Registro e inicio de sesión.
+* Autenticación de usuarios mediante JWT.
+* Información del perfil.
+* Actualización del avatar.
+* Creación y eliminación de tarjetas.
+* Likes de las tarjetas.
 
-Diseño
+La información se almacena en MongoDB mediante Mongoose.
+
+En producción, la aplicación utiliza MongoDB Atlas.
+
+🎨 Diseño
 
 La interfaz fue implementada siguiendo los diseños proporcionados en Figma e incluye:
 
@@ -88,7 +108,7 @@ La interfaz fue implementada siguiendo los diseños proporcionados en Figma e in
 * Diseño responsive.
 * Popups para edición de perfil, avatar, tarjetas e información de autenticación.
 
-Ejecución local
+💻 Ejecución local
 
 Frontend
 
@@ -104,15 +124,17 @@ Desde la carpeta server:
 npm install
 npm run dev
 
-El backend utiliza MongoDB, por lo que el servicio de MongoDB debe estar ejecutándose localmente.
+Para ejecutar el backend localmente, es necesario configurar las variables de entorno correspondientes y disponer de una conexión a MongoDB.
 
-Estado del proyecto
+Las credenciales y variables sensibles deben mantenerse fuera del repositorio.
 
-El proyecto incluye actualmente la integración frontend/backend, operaciones CRUD, persistencia de datos con MongoDB y autenticación del lado del cliente.
+📌 Estado del proyecto
 
-Los siguientes sprints continuarán ampliando la seguridad y autenticación desde el servidor.
+El proyecto cuenta con integración frontend/backend, operaciones CRUD, autenticación mediante JWT y persistencia de datos con MongoDB.
 
-Autor
+El frontend y el backend están desplegados en Vercel y conectados a una base de datos MongoDB Atlas.
+
+👩‍💻 Autor
 
 Adriana Capriles
 
