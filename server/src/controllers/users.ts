@@ -50,6 +50,7 @@ const createUser = async (req: Request, res: Response) => {
   res.status(201).send(userData);
 };
 
+//Authentication controller functions
 const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -87,9 +88,18 @@ const login = async (req: Request, res: Response) => {
     jwtSecret, 
     { expiresIn: "7d" }
   );
-  res.send({ token });
+
+  res.status (200).json({
+    token,
+    _id: user._id,
+    email: user.email,
+    name: user.name,
+    about: user.about,
+    avatar: user.avatar,
+  });
 };
 
+//Current user controller functions
 const getCurrentUser = async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw Object.assign(

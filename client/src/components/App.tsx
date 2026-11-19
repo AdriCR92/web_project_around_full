@@ -81,23 +81,32 @@ async function handleLogin(email: string, password: string) {
     const data = await login({ email, password });
 
     localStorage.setItem("jwt", data.token);
+    setCurrentUser({
+      _id: data._id,
+      email: data.email,
+      name: data.name,
+      about: data.about,
+      avatar: data.avatar,
+    });
 
-    const userData = await checkToken(data.token);
-
-    setCurrentUser(userData);
     setIsLoggedIn(true);
 
     navigate("/");
   } catch (error) {
     console.error(error);
+
     localStorage.removeItem("jwt");
     setCurrentUser(null);
     setIsLoggedIn(false);
 
     setIsRegisterSuccess(false);
+
     setInfoTooltipMessage(
-      "Uy, algo salió mal. Por favor, inténtalo de nuevo."
+      error instanceof Error
+        ? error.message
+        : "Uy, algo salió mal. Por favor, inténtalo de nuevo."
     );
+
     setIsInfoTooltipOpen(true);
   }
 }
@@ -111,6 +120,11 @@ async function handleRegister(email: string, password: string) {
   } catch (error) {
     console.error(error);
     setIsRegisterSuccess(false);
+    setInfoTooltipMessage(
+      error instanceof Error
+        ? error.message
+        : "Uy, algo salió mal. Por favor, inténtalo de nuevo."
+    );
     setIsInfoTooltipOpen(true);
   }
 }

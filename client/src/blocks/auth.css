@@ -69,6 +69,14 @@
   text-decoration: none;
 }
 
+.auth__error {
+  color: #ff4d4f;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 8px 0;
+  text-align: center;
+}
+
 .auth__link:hover {
   opacity: 0.6;
 }

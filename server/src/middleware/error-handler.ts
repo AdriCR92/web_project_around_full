@@ -43,7 +43,7 @@ const errorHandler = (
         ? "Ha ocurrido un error en el servidor"
         : err.message;
 
-  res.status(statusCode).send({ message });
+  res.status(statusCode).json({ message });
 };
 
 export { notFoundHandler, errorHandler };

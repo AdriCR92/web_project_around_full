@@ -10,7 +10,11 @@ async function checkResponse<T>(res: Response): Promise<T> {
     return res.json();
   }
 
-  throw new Error(`Error: ${res.status}`);
+  const errorData = await res.json().catch(() => null);
+
+  throw new Error(
+    errorData?.message || `Error HTTP: ${res.status}`
+  );
 }
 
 // Function to register a new user
@@ -35,6 +39,11 @@ export async function register({
 // Function to log in a user and receive a token
 type SigninResponse = {
   token: string;
+  _id: string;
+  email: string;
+  name: string;
+  about: string;
+  avatar: string;
 };
 
 export async function login({

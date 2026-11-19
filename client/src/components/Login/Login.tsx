@@ -9,11 +9,11 @@ function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
 
-    await onLogin(email, password);
-  }
+  await onLogin(email, password);
+}
 
   return (
     <div className="auth">

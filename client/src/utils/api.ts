@@ -24,13 +24,17 @@ class Api {
     return headers;
   }
 
-private async _checkResponse<T>(res: Response): Promise<T>{
-    if (res.ok) {
-      return await res.json();
-    }
-
-    throw new Error(`Error: ${res.status}`);
+private async _checkResponse<T>(res: Response): Promise<T> {
+  if (res.ok) {
+    return await res.json();
   }
+
+  const errorData = await res.json().catch(() => null);
+
+  throw new Error(
+    errorData?.message || `Error HTTP: ${res.status}`
+  );
+}
 
   //methods for user data
   async getUserInfo(): Promise<UserData> {
