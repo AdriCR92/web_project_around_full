@@ -1,3 +1,5 @@
+import {useEffect} from "react";
+
 type PopupProps = {
   title?: string;
   children: React.ReactNode;
@@ -13,8 +15,35 @@ export default function Popup({
   onClose,
   type = "default",
 }: PopupProps) {
+
+  useEffect(() => {
+  if (!isOpen) {
+    return;
+  }
+
+  const handleEscClose = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      onClose();
+    }
+  };
+
+  document.addEventListener("keydown", handleEscClose);
+
+  return () => {
+    document.removeEventListener("keydown", handleEscClose);
+  };
+}, [isOpen, onClose]);
+
+const handleOverlayClick = (
+  event: React.MouseEvent<HTMLDivElement>
+) => {
+  if (event.target === event.currentTarget) {
+    onClose();
+  }
+};
+
   return (
-    <div className={`popup ${isOpen ? "popup_is-opened" : ""}`}>
+    <div className={`popup ${isOpen ? "popup_is-opened" : ""}`} onClick={handleOverlayClick}>
       <div
         className={`popup__content ${
           type === "info"

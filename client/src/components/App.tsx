@@ -30,31 +30,25 @@ function App() {
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [isRegisterSuccess, setIsRegisterSuccess] = useState(false);
   const [infoTooltipMessage, setInfoTooltipMessage] = useState("");
-  const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
 
   //Effect to fetch user data and cards when the component mounts
-  useEffect(() => {
+useEffect(() => {
+  if (!isLoggedIn) {
+    return;
+  }
 
-    if (!isLoggedIn) {
-      return;
+  async function loadCards() {
+    try {
+      const initialCards = await api.getInitialCards();
+      setCards(initialCards);
+    } catch (err) {
+      console.error(err);
     }
+  }
 
-    async function loadData() {
-      try {
-        const [userData, initialCards] = await Promise.all([
-          api.getUserInfo(),
-          api.getInitialCards(),
-        ]);
-
-        setCurrentUser(userData);
-        setCards(initialCards);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    loadData();
-  }, [isLoggedIn]); 
+  loadCards();
+}, [isLoggedIn]);
 
   //Effect to check for a valid JWT token in local storage and set the logged-in state accordingly
   useEffect(() => {
@@ -64,10 +58,10 @@ function App() {
     return;
   }
   checkToken(token)
-    .then((data) => {
-      setIsLoggedIn(true);
-      setUserEmail(data.email);
-    })
+  .then((data) => {
+    setCurrentUser(data);
+    setIsLoggedIn(true);
+  })
     .catch((error) => {
       console.error(error);
       localStorage.removeItem("jwt");
@@ -85,12 +79,21 @@ async function handleLogin(email: string, password: string) {
 
   try {
     const data = await login({ email, password });
+
     localStorage.setItem("jwt", data.token);
+
+    const userData = await checkToken(data.token);
+
+    setCurrentUser(userData);
     setIsLoggedIn(true);
-    setUserEmail(email);
+
     navigate("/");
   } catch (error) {
     console.error(error);
+    localStorage.removeItem("jwt");
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+
     setIsRegisterSuccess(false);
     setInfoTooltipMessage(
       "Uy, algo salió mal. Por favor, inténtalo de nuevo."
@@ -114,20 +117,28 @@ async function handleRegister(email: string, password: string) {
 
 function handleLogout() {
   localStorage.removeItem("jwt");
+
   setIsLoggedIn(false);
-  setUserEmail("");
+  setCurrentUser(null);
+  setCards([]);
+  setPopup(null);
+
+  setIsInfoTooltipOpen(false);
+  setIsRegisterSuccess(false);
+  setInfoTooltipMessage("");
+
   navigate("/signin");
 }
 
-  function handleOpenPopup(config: PopupConfig) {
-    setPopup(config);
-  }
+function handleOpenPopup(config: PopupConfig) {
+  setPopup(config);
+}
 
-  function handleClosePopup() {
-    setPopup(null);
-  }
+function handleClosePopup() {
+  setPopup(null);
+}
 
-  function handleCloseInfoTooltip() {
+function handleCloseInfoTooltip() {
   setIsInfoTooltipOpen(false);
   if (isRegisterSuccess) {
     navigate("/signin");
@@ -201,9 +212,9 @@ const mainApp = (
     }}
   >
     <div className="page__content">
-      <Header 
-      logo={logo} 
-      email={userEmail}
+      <Header
+      logo={logo}
+      email={currentUser?.email ?? ""}
       isLoggedIn={isLoggedIn}
       onLogout={handleLogout}
       />

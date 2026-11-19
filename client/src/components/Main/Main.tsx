@@ -32,17 +32,17 @@ const {currentUser} = useContext(CurrentUserContext);
 //Hooks: 
 //Popup configuration for the "New Card" popup
 const newCardPopupConfig: PopupConfig = {
-  title: "New place",
+  title: "Nueva tarjeta",
   children: <NewCard />,
 };
 //Popup configuration for the "Edit Profile" popup
 const editProfilePopupConfig: PopupConfig = {
-  title: "Edit profile",
+  title: "Editar perfil",
   children: <EditProfile />,
 };
 //Popup configuration for the "Edit Avatar" popup
 const editAvatarPopupConfig: PopupConfig = {
-  title: "Edit avatar",
+  title: "Editar avatar",
   children: <EditAvatar />,
 };
 
