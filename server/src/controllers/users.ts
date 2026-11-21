@@ -45,9 +45,13 @@ const createUser = async (req: Request, res: Response) => {
     password: hashedPassword,
   });
 
-  const { password: _password, ...userData } = newUser.toObject();
-
-  res.status(201).send(userData);
+  res.status(201).json({
+    _id: newUser._id,
+    email: newUser.email,
+    name: newUser.name,
+    about: newUser.about,
+    avatar: newUser.avatar,
+  });
 };
 
 //Authentication controller functions
@@ -115,7 +119,13 @@ const getCurrentUser = async (req: Request, res: Response) => {
     );
   }
 
-  res.json(user);
+  res.status(200).json({
+    _id: user._id,
+    email: user.email,
+    name: user.name,
+    about: user.about,
+    avatar: user.avatar,
+  });
 };
 
 //Profile controller functions

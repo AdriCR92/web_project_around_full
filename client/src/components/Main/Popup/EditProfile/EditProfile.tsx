@@ -11,11 +11,11 @@ export default function EditProfile() {
 
   const isNameValid =
   name.trim().length >= 2 &&
-  name.length <= 40;
+  name.length <= 30;
 
   const isDescriptionValid =
   description.trim().length >= 2 &&
-  description.length <= 200;
+  description.length <= 30;
 
   const isFormValid = isNameValid && isDescriptionValid;
 
@@ -61,7 +61,7 @@ export default function EditProfile() {
               type="text"
               required
               minLength={2}
-              maxLength={40}
+              maxLength={30}
               value={name}
               onChange={(e) => setName(e.target.value)}
               onBlur={() => setNameTouched(true)}
@@ -76,7 +76,7 @@ export default function EditProfile() {
               id="profile-name-input-error"
             >
               {showNameError
-              ? "El nombre debe tener entre 2 y 40 caracteres válidos."
+              ? "El nombre debe tener entre 2 y 30 caracteres válidos."
               : ""}
             </span>
 
@@ -92,7 +92,6 @@ export default function EditProfile() {
               type="text"
               required
               minLength={2}
-              maxLength={200}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => setDescriptionTouched(true)}
@@ -107,7 +106,7 @@ export default function EditProfile() {
             id="profile-description-input-error"
             >
             {showDescriptionError
-            ? "La descripción debe tener entre 2 y 200 caracteres válidos."
+            ? "La descripción debe tener entre 2 y 30 caracteres válidos."
             : ""}
             </span> 
             
